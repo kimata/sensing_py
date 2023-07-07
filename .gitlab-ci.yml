@@ -1,0 +1,28 @@
+image: docker:24.0-dind
+
+stages:
+    - build
+    - test
+    - deploy
+    - renovate
+
+build-image:
+    stage: build
+    
+    image: registry.green-rabbit.net:5000/kimata/ubuntu-docker-build:d386d462
+
+    variables:
+        BUILDER: arm_builder
+
+    script:
+        - export GIT_SSL_NO_VERIFY=1
+        - git clone https://gitlab.green-rabbit.net/kimata/hems_config.git
+        - mv hems_config/unit_cooler.yaml config.yaml
+
+        - docker buildx create --name ${BUILDER} --config script/buildkitd.toml --use
+        - docker buildx use ${BUILDER}
+        - docker buildx build --platform linux/amd64,linux/arm64/v8
+          --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:cache
+          --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:cache
+          --push --tag ${CI_REGISTRY_IMAGE} .
+        # - docker buildx stop ${BUILDER}

@@ -1,16 +1,23 @@
 FROM ubuntu:22.04
 
+ARG TARGETPLATFORM
+
 ENV TZ=Asia/Tokyo
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-RUN apt-get install -y language-pack-ja
-
-RUN apt-get install -y python3-yaml python3-coloredlogs
-RUN apt-get install -y python3-fluent-logger
-RUN apt-get install -y python3-smbus python3-spidev python3-bluez
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then GPIO_LIB="python3-rpi.gpio"; fi; \
+    apt-get update && apt-get install -y \
+    language-pack-ja \
+    python3 python3-pip \
+    python3-docopt \
+    python3-yaml python3-coloredlogs \
+    python3-fluent-logger \
+    python3-smbus python3-spidev python3-serial python3-bluez \
+    ${GPIO_LIB} \
+ && apt-get clean \
+ && rm -rf /va/rlib/apt/lists/*
 
 WORKDIR /opt/sensor_env
 COPY . .
 
-CMD ["./app/room.py"]
+CMD ["./app/app.py"]
