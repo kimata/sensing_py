@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+I2C/SPI/UART で接続されたセンサーで計測を行い，結果を Fluentd で送信する
+スクリプトです．
+
+Usage:
+  app.py [-c CONFIG]
+
+Options:
+  -c CONFIG         : CONFIG を設定ファイルとして読み込んで実行します．[default: config.yaml]
+"""
+
+from docopt import docopt
 
 import os
 import socket
@@ -11,36 +23,35 @@ import logging
 import traceback
 import fluent.sender
 
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "lib"))
+sys.path.append(str(pathlib.Path(__file__).parent.parent / "lib"))
 
-from config import load_config
-import logger
-
-RASP_I2C_BUS_ARM = 0x1  # Raspberry Pi のデフォルトの I2C バス番号
-RASP_I2C_BUS_VC = 0x0  # dtparam=i2c_vc=on で有効化される I2C のバス番号
-
-SENSOR_MODULE_LIST = [
-    {"name": "scd4x"},
-    {"name": "max31856"},
-    {"name": "sht35"},
-    {"name": "apds9250"},
-    {"name": "veml7700"},
-    {"name": "veml6075", "bus": RASP_I2C_BUS_VC},
-]
+RASP_I2C_BUS = {
+    "arm": 0x1,  # Raspberry Pi のデフォルトの I2C バス番号
+    "vc": 0x0,  # dtparam=i2c_vc=on で有効化される I2C のバス番号
+}
 
 
-def load_sensor():
+def load_sensor(sensor_cand_list):
     sensor_list = []
-    for sensor_module in SENSOR_MODULE_LIST:
-        logging.info("Load {name}".format(name=sensor_module["name"]))
-        mod = importlib.import_module("sensor." + sensor_module["name"])
+    for sensor in sensor_cand_list:
+        logging.info("Load {name}".format(name=sensor["name"]))
+        mod = importlib.import_module("sensor." + sensor["name"])
 
-        if "bus" in sensor_module:
-            sensor = getattr(mod, sensor_module["name"].upper())(
-                bus=sensor_module["bus"]
-            )
+        if "i2c_bus" in sensor:
+            bus = RASP_I2C_BUS[sensor["i2c_bus"]]
+
+            i2c_dev_file = pathlib.Path("/dev/i2c-{bus}".format(bus=bus))
+            if not i2c_dev_file.exists():
+                logging.warning(
+                    "I2C bus {bus} ({dev_file}) does NOT exist. skipping...".format(
+                        bus=bus, dev_file=str(i2c_dev_file)
+                    )
+                )
+                continue
+
+            sensor = getattr(mod, sensor["name"].upper())(bus=bus)
         else:
-            sensor = getattr(mod, sensor_module["name"].upper())()
+            sensor = getattr(mod, sensor["name"].upper())()
 
         sensor_list.append(sensor)
 
@@ -66,40 +77,50 @@ def sense(sensor_list):
 
 
 ######################################################################
-logger.init("sensor.enviorment")
+if __name__ == "__main__":
+    from config import load_config
+    import logger
 
-logging.info("Load config...")
-config = load_config()
+    args = docopt(__doc__)
 
-logging.info("Load sensors...")
-sensor_list = load_sensor()
-logging.info("Check sensor existences...")
-sensor_list = list(filter(lambda sensor: sensor.ping(), sensor_list))
+    config_file = args["-c"]
 
-logging.info(
-    "Active sensor list: {sensor_list}".format(
-        sensor_list=", ".join(map(lambda sensor: sensor.NAME, sensor_list))
-    )
-)
+    logger.init("sensor.enviorment", level=logging.INFO)
 
-hostname = os.environ.get("NODE_HOSTNAME", socket.gethostname())
+    logging.info("Load config...")
+    config = load_config(config_file)
 
-logging.info("Hostanm: {hostname}".format(hostname=hostname))
+    logging.info("Load sensors...")
+    sensor_list = load_sensor(config["sensor"])
 
-sender = fluent.sender.FluentSender("sensor", host=config["fluent"]["host"])
-while True:
-    logging.info("Start.")
-
-    value_map = sense(sensor_list)
-    value_map.update({"hostname": hostname})
-
-    if sender.emit("rasp", value_map):
-        logging.info("Finish.")
-        pathlib.Path(config["liveness"]["file"]).touch()
-    else:
-        logging.error(sender.last_error)
+    logging.info("Check sensor existences...")
+    sensor_list = list(filter(lambda sensor: sensor.ping(), sensor_list))
 
     logging.info(
-        "sleep {sleep_time} sec...".format(sleep_time=config["sense"]["interval"])
+        "Active sensor list: {sensor_list}".format(
+            sensor_list=", ".join(map(lambda sensor: sensor.NAME, sensor_list))
+        )
     )
-    time.sleep(config["sense"]["interval"])
+
+    hostname = os.environ.get("NODE_HOSTNAME", socket.gethostname())
+
+    logging.info("Hostname: {hostname}".format(hostname=hostname))
+
+    sender = fluent.sender.FluentSender("sensor", host=config["fluent"]["host"])
+
+    while True:
+        logging.info("Start.")
+
+        value_map = sense(sensor_list)
+        value_map.update({"hostname": hostname})
+
+        if sender.emit("rasp", value_map):
+            logging.info("Finish.")
+            pathlib.Path(config["liveness"]["file"]).touch()
+        else:
+            logging.error(sender.last_error)
+
+        logging.info(
+            "sleep {sleep_time} sec...".format(sleep_time=config["sense"]["interval"])
+        )
+        time.sleep(config["sense"]["interval"])
