@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+MAXIM の MAX31856 を使って，温度計測を行うラブラリです．
 
-# MAXIM の MAX31856 を使って，温度計測を行うラブラリです．
+Usage:
+  max31856.py 
+
+Options:
+
+"""
 
 import spidev
 import time
@@ -85,18 +92,22 @@ class MAX31856:
 
 if __name__ == "__main__":
     # TEST Code
-    import os
+    from docopt import docopt
+    import pathlib
     import sys
-    import pprint
+    import logging
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+    sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
     import sensor.max31856
 
-    max31856 = sensor.max31856.MAX31856()
+    args = docopt(__doc__)
 
-    ping = max31856.ping()
-    print("PING: %s" % ping)
+    logging.getLogger().setLevel(logging.INFO)
 
+    sensor = sensor.max31856.MAX31856()
+
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(max31856.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))

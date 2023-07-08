@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+SHT-35 を使って温度や湿度を取得するライブラリです．
 
-# SHT-35 を使って温度や湿度を取得するライブラリです．
-#
+Usage:
+  sht35.py [-b BUS] [-d DEV_ADDR]
+
+Options:
+  -b BUS        : I2C バス番号．[default: 0x01]
+  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
+"""
+
 # 作成時に使用したのは，Tindie の
 # 「SHT35-D (Digital) Humidity & Temperature Sensor」．
 # https://www.tindie.com/products/closedcube/sht35-d-digital-humidity-temperature-sensor/
@@ -75,18 +83,24 @@ class SHT35:
 
 if __name__ == "__main__":
     # TEST Code
-    import os
+    from docopt import docopt
+    import pathlib
     import sys
-    import pprint
+    import logging
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+    sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
     import sensor.sht35
 
-    sht35 = sensor.sht35.SHT35()
+    args = docopt(__doc__)
+    bus = int(args["-b"], 0)
+    dev_addr = int(args["-d"], 0)
 
-    ping = sht35.ping()
-    print("PING: %s" % ping)
+    logging.getLogger().setLevel(logging.INFO)
 
+    sensor = sensor.sht35.SHT35(bus=bus, dev_addr=dev_addr)
+
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(sht35.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))

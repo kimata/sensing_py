@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+APDS-9250 を使って照度を取得するライブラリです．
 
-# APDS-9250 を使って照度を取得するライブラリです．
+Usage:
+  apds9250.py [-b BUS] [-d DEV_ADDR]
+
+Options:
+  -b BUS        : I2C バス番号．[default: 0x01]
+  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
+"""
 
 import struct
 import smbus2
@@ -52,18 +60,24 @@ class APDS9250:
 
 if __name__ == "__main__":
     # TEST Code
-    import os
+    from docopt import docopt
+    import pathlib
     import sys
-    import pprint
+    import logging
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+    sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
     import sensor.apds9250
 
-    apds9250 = sensor.apds9250.APDS9250()
+    args = docopt(__doc__)
+    bus = int(args["-b"], 0)
+    dev_addr = int(args["-d"], 0)
 
-    ping = apds9250.ping()
-    print("PING: %s" % ping)
+    logging.getLogger().setLevel(logging.INFO)
 
+    sensor = sensor.apds9250.APDS9250(bus=bus, dev_addr=dev_addr)
+
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(apds9250.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))

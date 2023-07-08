@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+SCD4x を使って CO2 濃度を取得するライブラリです．
 
-# SCD4x を使って CO2 濃度を取得するライブラリです．
-#
+Usage:
+  scd4x.py [-b BUS] [-d DEV_ADDR]
+
+Options:
+  -b BUS        : I2C バス番号．[default: 0x01]
+  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
+"""
+
 # 作成時に使用したのは，Sensirion の SEK SCD41．
 # https://www.sensirion.com/en/environmental-sensors/evaluation-kit-sek-environmental-sensing/evaluation-kit-sek-scd41/
 # 明示的に start_periodic_measurement を呼ばなくても済むように少し工夫しています．
@@ -109,18 +117,24 @@ class SCD4X:
 
 if __name__ == "__main__":
     # TEST Code
-    import os
+    from docopt import docopt
+    import pathlib
     import sys
-    import pprint
+    import logging
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+    sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
     import sensor.scd4x
 
-    scd4x = sensor.scd4x.SCD4X()
+    args = docopt(__doc__)
+    bus = int(args["-b"], 0)
+    dev_addr = int(args["-d"], 0)
 
-    ping = scd4x.ping()
-    print("PING: %s" % ping)
+    logging.getLogger().setLevel(logging.INFO)
 
+    sensor = sensor.scd4x.SCD4X(bus=bus, dev_addr=dev_addr)
+
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(scd4x.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))

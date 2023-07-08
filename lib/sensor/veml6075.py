@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+VEML6075 を使って紫外線を計測するライブラリです．
 
-# VEML6075 を使って紫外線を計測するライブラリです．
+Usage:
+  veml6075.py [-b BUS] [-d DEV_ADDR]
+
+Options:
+  -b BUS        : I2C バス番号．[default: 0x01]
+  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
+"""
 
 import time
 import smbus2
@@ -136,18 +144,24 @@ class VEML6075:
 
 if __name__ == "__main__":
     # TEST Code
+    from docopt import docopt
     import pathlib
     import sys
-    import pprint
+    import logging
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
     import sensor.veml6075
 
-    veml6075 = sensor.veml6075.VEML6075()
+    args = docopt(__doc__)
+    bus = int(args["-b"], 0)
+    dev_addr = int(args["-d"], 0)
 
-    ping = veml6075.ping()
-    print("PING: %s" % ping)
+    logging.getLogger().setLevel(logging.INFO)
 
+    sensor = sensor.veml6075.VEML6075(bus=bus, dev_addr=dev_addr)
+
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(veml6075.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
