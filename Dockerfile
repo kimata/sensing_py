@@ -17,7 +17,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then GPIO_LIB="python3-rpi.gpio"; 
  && apt-get clean \
  && rm -rf /va/rlib/apt/lists/*
 
-WORKDIR /opt/sensor_env
+WORKDIR /opt/sensing_py
 COPY . .
 
 CMD ["./app/app.py"]
