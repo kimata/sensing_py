@@ -96,7 +96,8 @@ if __name__ == "__main__":
 
     logging.info(
         "Active sensor list: {sensor_list}".format(
-            sensor_list=", ".join(map(lambda sensor: sensor.NAME, sensor_list))
+            sensor_list=", ".join(map(lambda sensor: "{name} (0x{dev_addr:02X})".format(
+                name=sensor.NAME, dev_addr=sensor.dev_addr), sensor_list))
         )
     )
 
