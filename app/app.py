@@ -62,9 +62,7 @@ def sense(sensor_list):
     value_map = {}
     for sensor in sensor_list:
         try:
-            logging.info(
-                "Measurements are being taken using {name}".format(name=sensor.NAME)
-            )
+            logging.info("Measurement is taken using {name}".format(name=sensor.NAME))
             val = sensor.get_value_map()
             logging.info(val)
             value_map.update(val)
