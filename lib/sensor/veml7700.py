@@ -4,7 +4,7 @@
 # VEML7700 を使って照度(LUX)を取得するライブラリです．
 
 import time
-import smbus
+import smbus2
 
 
 class VEML7700:
@@ -36,7 +36,7 @@ class VEML7700:
     def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
         self.bus = bus
         self.dev_addr = dev_addr
-        self.i2cbus = smbus.SMBus(bus)
+        self.i2cbus = smbus2.SMBus(bus)
         self.gain = 0.125
         self.integ = 25
 
@@ -97,9 +97,9 @@ class VEML7700:
             # NOTE:
             # https://www.vishay.com/docs/84367/designingveml6030.pdf
             als = (
-                (6.0135e-13 * als**4)
-                - (9.3924e-9 * als**3)
-                + (8.1488e-5 * als**2)
+                (6.0135e-13 * als ** 4)
+                - (9.3924e-9 * als ** 3)
+                + (8.1488e-5 * als ** 2)
                 + (1.0023e0 * als)
             )
 

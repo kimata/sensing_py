@@ -4,7 +4,7 @@
 # APDS-9250 を使って照度を取得するライブラリです．
 
 import struct
-import smbus
+import smbus2
 
 
 class APDS9250:
@@ -15,7 +15,7 @@ class APDS9250:
     def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
         self.bus = bus
         self.dev_addr = dev_addr
-        self.i2cbus = smbus.SMBus(bus)
+        self.i2cbus = smbus2.SMBus(bus)
 
     def ping(self):
         try:

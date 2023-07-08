@@ -4,7 +4,7 @@
 # VEML6075 を使って紫外線を計測するライブラリです．
 
 import time
-import smbus
+import smbus2
 
 
 class VEML6075:
@@ -48,7 +48,7 @@ class VEML6075:
     def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
         self.bus = bus
         self.dev_addr = dev_addr
-        self.i2cbus = smbus.SMBus(bus)
+        self.i2cbus = smbus2.SMBus(bus)
         self.it = self.CONF_IT_50MS
         self.is_init = False
 
@@ -136,11 +136,11 @@ class VEML6075:
 
 if __name__ == "__main__":
     # TEST Code
-    import os
+    import pathlib
     import sys
     import pprint
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+    sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
     import sensor.veml6075
 

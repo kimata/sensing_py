@@ -8,7 +8,7 @@
 # 明示的に start_periodic_measurement を呼ばなくても済むように少し工夫しています．
 
 import time
-import smbus
+import smbus2
 
 
 class SCD4X:
@@ -19,7 +19,7 @@ class SCD4X:
     def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
         self.bus = bus
         self.dev_addr = dev_addr
-        self.i2cbus = smbus.SMBus(bus)
+        self.i2cbus = smbus2.SMBus(bus)
         self.is_init = False
 
     def ping(self):
@@ -95,9 +95,9 @@ class SCD4X:
 
         co2 = int.from_bytes(resp[0:2], byteorder="big")
         temp = -45 + (175 * int.from_bytes(resp[2:4], byteorder="big")) / float(
-            2**16 - 1
+            2 ** 16 - 1
         )
-        humi = 100 * int.from_bytes(resp[4:6], byteorder="big") / float(2**16 - 1)
+        humi = 100 * int.from_bytes(resp[4:6], byteorder="big") / float(2 ** 16 - 1)
 
         return [co2, round(temp, 4), round(humi, 1)]
 

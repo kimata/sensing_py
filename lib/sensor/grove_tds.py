@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Groove 水質測定センサー を使って TDS を取得するライブラリです．
 
-# ADS-1015 を使って温度や湿度を取得するライブラリです．
-#
+Usage:
+  grove_tds.py [-b BUS] [-d DEV_ADDR]
 
-if __name__ == "__main__":
-    import os
-    import sys
+Options:
+  -b BUS        : I2C バス番号．[default: 0x01]
+  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
+"""
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
 import sensor.ads1015
 
@@ -16,8 +22,9 @@ import sensor.ads1015
 class GROVE_TDS:
     NAME = "GROVE-TDS"
     DEV_ADDR = 0x4A  # 7bit
+    RASP_I2C_BUS = 0x1  # Raspberry Pi の I2C のバス番号
 
-    def __init__(self, bus, dev_addr=DEV_ADDR):
+    def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
         self.adc = sensor.ads1015.ADS1015(bus, dev_addr)
         self.adc.set_mux(self.adc.REG_CONFIG_MUX_0G)
         self.adc.set_pga(self.adc.REG_CONFIG_FSR_2048)
@@ -40,12 +47,20 @@ class GROVE_TDS:
 
 if __name__ == "__main__":
     # TEST Code
+    from docopt import docopt
+    import pathlib
+    import sys
     import pprint
+
+    sys.path.append(str(pathlib.Path(__file__).parent.parent))
+
     import sensor.grove_tds
 
-    I2C_BUS = 0x1  # I2C のバス番号 (Raspberry Pi は 0x1)
+    args = docopt(__doc__)
+    bus = int(args["-b"], 0)
+    dev_addr = int(args["-d"], 0)
 
-    grove_tds = sensor.grove_tds.GROVE_TDS(I2C_BUS)
+    grove_tds = sensor.grove_tds.GROVE_TDS(bus=bus, dev_addr=dev_addr)
 
     ping = grove_tds.ping()
     print("PING: %s" % ping)

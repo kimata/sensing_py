@@ -93,8 +93,5 @@ def _release():
 
 
 if __name__ == "__main__":
-    import logger
-
-    logger.init("test", level=logging.DEBUG)
-
-    sense()
+    logging.getLogger().setLevel(logging.INFO)
+    logging.info(sense())
