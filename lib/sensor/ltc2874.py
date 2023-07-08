@@ -11,7 +11,7 @@ import logging.handlers
 import pprint
 import time
 
-import io_link as io_link
+import sensor.io_link as io_link
 
 DEBUG = True
 

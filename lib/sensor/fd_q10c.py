@@ -17,7 +17,7 @@ import time
 import fcntl
 import logging
 
-import ltc2874 as driver
+import sensor.ltc2874 as driver
 
 
 class FD_Q10C:
@@ -30,7 +30,13 @@ class FD_Q10C:
         self.lock_fd = None
         self.timeout = timeout
 
+    def ping(self):
+        return self.read_param(0x12, driver.DATA_TYPE_STRING)[0:4] == "FD-Q"
+
     def get_value(self, force_power_on=True):
+        return round(self.read_param(0x94, driver.DATA_TYPE_UINT16) * 0.01, 2)
+
+    def read_param(self, index, data_type, force_power_on=True):
         if not self._acquire():
             raise RuntimeError("Unable to acquire the lock.")
 
@@ -40,19 +46,16 @@ class FD_Q10C:
             if force_power_on or driver.com_status(spi):
                 ser = driver.com_start(spi)
 
-                flow = round(
-                    driver.isdu_read(spi, ser, 0x94, driver.DATA_TYPE_UINT16) * 0.01, 2
-                )
-                logging.info("flow: {flow:.2f} L/min".format(flow=flow))
+                value = driver.isdu_read(spi, ser, index, data_type)
 
                 driver.com_stop(spi, ser)
                 driver.com_close(spi)
             else:
-                flow = None
+                value = None
 
             self._release()
 
-            return flow
+            return value
         except:
             driver.com_close(spi)
 
@@ -77,7 +80,7 @@ class FD_Q10C:
         self.lock_fd = os.open(self.lock_file, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
 
         time_start = time.time()
-        while time.time() < time_start + timeout:
+        while time.time() < time_start + self.timeout:
             try:
                 fcntl.flock(self.lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except (IOError, OSError):
