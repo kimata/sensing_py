@@ -1,8 +1,17 @@
 fluent:
-    host: proxy.green-rabbit.net
+  host: proxy.green-rabbit.net
+
+sensor:
+  - name: scd4x
+  - name: max31856
+  - name: sht35
+  - name: apds9250
+  - name: veml7700
+  - name: veml6075
+    bus: vc
 
 sense:
-    interval: 30
+  interval: 30
 
 liveness:
-    file: /dev/shm/healthz
+  file: /dev/shm/healthz
