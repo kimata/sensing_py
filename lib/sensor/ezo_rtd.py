@@ -11,7 +11,6 @@ Options:
   -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
 """
 
-
 import smbus2
 import struct
 import time
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     from docopt import docopt
     import pathlib
     import sys
-    import pprint
+    import logging
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
@@ -77,10 +76,11 @@ if __name__ == "__main__":
     bus = int(args["-b"], 0)
     dev_addr = int(args["-d"], 0)
 
-    ezo_rtd = sensor.ezo_rtd.EZO_RTD(bus=bus, dev_addr=dev_addr)
+    logging.getLogger().setLevel(logging.INFO)
 
-    ping = ezo_rtd.ping()
-    print("PING: %s" % ping)
+    sensor = sensor.ezo_rtd.EZO_RTD(bus=bus, dev_addr=dev_addr)
 
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(ezo_rtd.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))

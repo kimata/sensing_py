@@ -50,7 +50,7 @@ if __name__ == "__main__":
     from docopt import docopt
     import pathlib
     import sys
-    import pprint
+    import logging
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
@@ -60,10 +60,11 @@ if __name__ == "__main__":
     bus = int(args["-b"], 0)
     dev_addr = int(args["-d"], 0)
 
-    grove_tds = sensor.grove_tds.GROVE_TDS(bus=bus, dev_addr=dev_addr)
+    logging.getLogger().setLevel(logging.INFO)
 
-    ping = grove_tds.ping()
-    print("PING: %s" % ping)
+    sensor = sensor.grove_tds.GROVE_TDS(bus=bus, dev_addr=dev_addr)
 
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(grove_tds.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))

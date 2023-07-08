@@ -91,7 +91,7 @@ if __name__ == "__main__":
     from docopt import docopt
     import pathlib
     import sys
-    import pprint
+    import logging
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
@@ -101,10 +101,11 @@ if __name__ == "__main__":
     bus = int(args["-b"], 0)
     dev_addr = int(args["-d"], 0)
 
-    ads1015 = sensor.ads1015.ADS1015(bus=bus, dev_addr=dev_addr)
+    logging.getLogger().setLevel(logging.INFO)
 
-    ping = ads1015.ping()
-    print("PING: %s" % ping)
+    sensor = sensor.ads1015.ADS1015(bus=bus, dev_addr=dev_addr)
 
+    ping = sensor.ping()
+    logging.info("PING: {ping}".format(ping=ping))
     if ping:
-        pprint.pprint(ads1015.get_value_map())
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
