@@ -8,7 +8,7 @@ Usage:
 
 Options:
   -b BUS        : I2C バス番号．[default: 0x01]
-  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
+  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x52]
 """
 
 import struct

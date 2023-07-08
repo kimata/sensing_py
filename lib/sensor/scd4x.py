@@ -8,7 +8,7 @@ Usage:
 
 Options:
   -b BUS        : I2C バス番号．[default: 0x01]
-  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
+  -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x62]
 """
 
 # 作成時に使用したのは，Sensirion の SEK SCD41．
@@ -17,7 +17,6 @@ Options:
 
 import time
 import smbus2
-
 
 class SCD4X:
     NAME = "SCD4X"
@@ -71,9 +70,10 @@ class SCD4X:
 
     def __get_data_ready(self):
         # get_data_ready_status
-        self.i2cbus.write_byte_data(self.dev_addr, 0xE4, 0xB8)
-        data = self.i2cbus.read_i2c_block_data(self.dev_addr, 3)
-        resp = self.__decode_response(data)
+        
+        read = smbus2.i2c_msg.read(self.dev_addr, 3)
+        self.i2cbus.i2c_rdwr(smbus2.i2c_msg.write(self.dev_addr, [0xE4, 0xB8]), read)
+        resp = self.__decode_response(bytes(read))
 
         return (int.from_bytes(resp[0:2], byteorder="big") & 0x7F) != 0
 
@@ -86,8 +86,8 @@ class SCD4X:
             time.sleep(0.5)
 
         # start_periodic_measurement
-        self.i2cbus.write_byte_data(self.dev_addr, 0x21, 0xB1)
-
+        self.i2cbus.i2c_rdwr(smbus2.i2c_msg.write(self.dev_addr, [0x21, 0xB1]))
+        
         for i in range(10):
             if self.__get_data_ready():
                 return
@@ -96,10 +96,9 @@ class SCD4X:
     def get_value(self):
         self.__start_measurement()
 
-        # read_measurement
-        self.i2cbus.write_byte_data(self.dev_addr, 0xEC, 0x05)
-        data = self.i2cbus.read_i2c_block_data(self.dev_addr, 0x00, 9)
-        resp = self.__decode_response(data)
+        read = smbus2.i2c_msg.read(self.dev_addr, 9)
+        self.i2cbus.i2c_rdwr(smbus2.i2c_msg.write(self.dev_addr, [0xEC, 0x05]), read)
+        resp = self.__decode_response(bytes(read))
 
         co2 = int.from_bytes(resp[0:2], byteorder="big")
         temp = -45 + (175 * int.from_bytes(resp[2:4], byteorder="big")) / float(
