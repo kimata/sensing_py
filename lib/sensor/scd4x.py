@@ -18,6 +18,7 @@ Options:
 import time
 import smbus2
 
+
 class SCD4X:
     NAME = "SCD4X"
     DEV_ADDR = 0x62  # 7bit
@@ -70,7 +71,7 @@ class SCD4X:
 
     def __get_data_ready(self):
         # get_data_ready_status
-        
+
         read = smbus2.i2c_msg.read(self.dev_addr, 3)
         self.i2cbus.i2c_rdwr(smbus2.i2c_msg.write(self.dev_addr, [0xE4, 0xB8]), read)
         resp = self.__decode_response(bytes(read))
@@ -87,7 +88,7 @@ class SCD4X:
 
         # start_periodic_measurement
         self.i2cbus.i2c_rdwr(smbus2.i2c_msg.write(self.dev_addr, [0x21, 0xB1]))
-        
+
         for i in range(10):
             if self.__get_data_ready():
                 return
