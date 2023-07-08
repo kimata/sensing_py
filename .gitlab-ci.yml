@@ -8,7 +8,7 @@ stages:
 
 build-image:
     stage: build
-    
+
     image: registry.green-rabbit.net:5000/kimata/ubuntu-docker-build:d386d462
 
     variables:
