@@ -12,7 +12,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then GPIO_LIB="python3-rpi.gpio"; 
     python3-docopt \
     python3-yaml python3-coloredlogs \
     python3-fluent-logger \
-    python3-smbus python3-spidev python3-serial python3-bluez \
+    python3-smbus2 python3-spidev python3-serial python3-bluez \
     ${GPIO_LIB} \
  && apt-get clean \
  && rm -rf /va/rlib/apt/lists/*
