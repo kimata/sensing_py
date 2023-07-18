@@ -125,7 +125,7 @@ if __name__ == "__main__":
     lock_file = args["-l"]
     timeout = int(args["-t"], 0)
 
-    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger().setLevel(logging.DEBUG)
 
     sensor = sensor.fd_q10c.FD_Q10C(lock_file, timeout)
 
