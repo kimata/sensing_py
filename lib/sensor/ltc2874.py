@@ -44,7 +44,7 @@ def dump_byte_list(label, byte_list):
 def ltc2874_reg_read(spi, reg):
     recv = spi.xfer2([(0x00 << 5) | (reg << 1), 0x00])
 
-    dump_byte_list("SPI READ", struct.unpack("{}B".format(len(recv)), recv))
+    dump_byte_list("SPI READ", recv)
 
     return recv[1]
 
