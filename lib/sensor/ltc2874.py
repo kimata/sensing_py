@@ -42,7 +42,11 @@ def dump_byte_list(label, byte_list):
 
 
 def ltc2874_reg_read(spi, reg):
-    return spi.xfer2([(0x00 << 5) | (reg << 1), 0x00])[1]
+    recv = spi.xfer2([(0x00 << 5) | (reg << 1), 0x00])
+
+    dump_byte_list("SPI READ", struct.unpack("{}B".format(len(recv)), recv))
+
+    return recv[1]
 
 
 def ltc2874_reg_write(spi, reg, data):
@@ -140,7 +144,7 @@ def com_write(spi, ser, byte_list):
     # Drive enable
     ltc2874_reg_write(spi, 0x0D, 0x01)
 
-    dump_byte_list("SEND", byte_list)
+    dump_byte_list("COM SEND", byte_list)
 
     ser.write(struct.pack("{}B".format(len(byte_list)), *byte_list))
     ser.flush()
@@ -153,7 +157,7 @@ def com_read(spi, ser, length):
     recv = ser.read(length)
     byte_list = struct.unpack("{}B".format(len(recv)), recv)
 
-    dump_byte_list("RECV", byte_list)
+    dump_byte_list("COM RECV", byte_list)
 
     return byte_list
 
