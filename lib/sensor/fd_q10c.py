@@ -16,6 +16,11 @@ import os
 import time
 import fcntl
 import logging
+import sys
+import pathlib
+
+if __name__ == "__main__":
+    sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
 import sensor.ltc2874 as driver
 
@@ -111,8 +116,6 @@ class FD_Q10C:
 if __name__ == "__main__":
     # TEST Code
     from docopt import docopt
-    import pathlib
-    import sys
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 
