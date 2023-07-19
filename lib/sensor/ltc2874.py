@@ -38,7 +38,9 @@ def debug(message):
 
 
 def dump_byte_list(label, byte_list):
-    logging.debug("{}: {}".format(label, ", ".join(hex(x) for x in byte_list)))
+    logging.debug(
+        "{}: {}".format(label, ", ".join("0x{v:02X}".format(v=v) for v in byte_list))
+    )
 
 
 def ltc2874_reg_read(spi, reg):

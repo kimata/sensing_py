@@ -6,9 +6,11 @@ KEYENCE のクランプオン式流量センサ FD-Q10C と IO-LINK で通信を
 
 Usage:
   fd_q10c.py [-l LOCK] [-t TIMEOUT]
+  fd_q10c.py -p
 
 Options:
   -l LOCK       : ロックファイル． [default: /dev/shm/fd_q10c.lock]
+  -p            : 存在確認を実施．
   -t TIMEOUT    : タイムアウト時間． [default: 5]
 """
 
@@ -123,10 +125,14 @@ if __name__ == "__main__":
 
     args = docopt(__doc__)
     lock_file = args["-l"]
+    ping_mode = args["-p"]
     timeout = int(args["-t"], 0)
 
     logging.getLogger().setLevel(logging.DEBUG)
 
     sensor = sensor.fd_q10c.FD_Q10C(lock_file, timeout)
 
-    logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
+    if ping_mode:
+        logging.info("PING: {value}".format(value=sensor.ping()))
+    else:
+        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
