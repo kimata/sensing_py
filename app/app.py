@@ -76,7 +76,7 @@ def sense(sensor_list):
 
 def sensor_info(sensor):
     if sensor.dev_addr != None:
-        return "{name} (0x{dev_addr:02X})".format(
+        return "{name} (I2C: 0x{dev_addr:02X})".format(
             name=sensor.NAME, dev_addr=sensor.dev_addr
         )
     else:
