@@ -33,6 +33,8 @@ class FD_Q10C:
     TIMEOUT = 5
 
     def __init__(self, lock_file=LOCK_FILE, timeout=TIMEOUT):
+        self.dev_addr = None
+        self.dev_type = "SPI, IO-LINK(UART)"
         self.lock_file = lock_file
         self.lock_fd = None
         self.timeout = timeout

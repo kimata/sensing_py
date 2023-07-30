@@ -74,6 +74,15 @@ def sense(sensor_list):
     return value_map
 
 
+def sensor_info(sensor):
+    if sensor.dev_addr != None:
+        return "{name} (0x{dev_addr:02X})".format(
+            name=sensor.NAME, dev_addr=sensor.dev_addr
+        )
+    else:
+        return "{name} ({dev_type})".format(name=sensor.NAME, dev_type=sensor.dev_type)
+
+
 ######################################################################
 if __name__ == "__main__":
     from config import load_config
@@ -96,8 +105,7 @@ if __name__ == "__main__":
 
     logging.info(
         "Active sensor list: {sensor_list}".format(
-            sensor_list=", ".join(map(lambda sensor: "{name} (0x{dev_addr:02X})".format(
-                name=sensor.NAME, dev_addr=sensor.dev_addr), sensor_list))
+            sensor_list=", ".join(map(lambda sensor: sensor_info(sensor), sensor_list))
         )
     )
 
