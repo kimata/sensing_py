@@ -25,6 +25,7 @@ class GROVE_TDS:
     RASP_I2C_BUS = 0x1  # Raspberry Pi の I2C のバス番号
 
     def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
+        self.dev_addr = dev_addr
         self.adc = sensor.ads1015.ADS1015(bus, dev_addr)
         self.adc.set_mux(self.adc.REG_CONFIG_MUX_0G)
         self.adc.set_pga(self.adc.REG_CONFIG_FSR_2048)
