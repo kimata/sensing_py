@@ -113,7 +113,11 @@ class FD_Q10C:
         self.lock_fd = None
 
     def get_value_map(self, force_power_on=True):
-        value = self.get_value()
+        try:
+            value = self.get_value()
+        except:
+            self.stop()
+            raise
 
         return {"flow": value}
 
