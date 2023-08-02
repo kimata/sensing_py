@@ -43,7 +43,9 @@ class FD_Q10C:
         return self.read_param(0x12, driver.DATA_TYPE_STRING)[0:4] == "FD-Q"
 
     def get_value(self, force_power_on=True):
-        return round(self.read_param(0x94, driver.DATA_TYPE_UINT16) * 0.01, 2)
+        return round(
+            self.read_param(0x94, driver.DATA_TYPE_UINT16, force_power_on) * 0.01, 2
+        )
 
     def read_param(self, index, data_type, force_power_on=True):
         if not self._acquire():
@@ -51,7 +53,6 @@ class FD_Q10C:
 
         try:
             spi = driver.com_open()
-
             if force_power_on or driver.com_status(spi):
                 ser = driver.com_start(spi)
 
