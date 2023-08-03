@@ -43,9 +43,22 @@ class FD_Q10C:
         return self.read_param(0x12, driver.DATA_TYPE_STRING)[0:4] == "FD-Q"
 
     def get_value(self, force_power_on=True):
-        return round(
-            self.read_param(0x94, driver.DATA_TYPE_UINT16, force_power_on) * 0.01, 2
-        )
+        try:
+            return round(
+                self.read_param(0x94, driver.DATA_TYPE_UINT16, force_power_on) * 0.01, 2
+            )
+        except:
+            self.stop()
+            raise
+
+    def get_state(self):
+        # NOTE: 電源 ON なら True
+        try:
+            spi = driver.com_open()
+            return driver.com_status(spi)
+        except:
+            driver.com_close(spi)
+            return False
 
     def read_param(self, index, data_type, force_power_on=True):
         if not self._acquire():
@@ -76,15 +89,17 @@ class FD_Q10C:
         if not self._acquire():
             raise RuntimeError("Unable to acquire the lock.")
 
+        spi = None
         try:
             spi = driver.com_open()
             driver.com_stop(spi, is_power_off=True)
             driver.com_close(spi)
             self._release()
         except:
-            driver.com_close(spi)
-            self._release()
-            raise
+            if spi is not None:
+                driver.com_close(spi)
+                self._release()
+                raise
 
     def _acquire(self):
         self.lock_fd = os.open(self.lock_file, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
@@ -97,7 +112,7 @@ class FD_Q10C:
                 pass
             else:
                 return True
-            time.sleep(1)
+            time.sleep(0.5)
 
         os.close(self.lock_fd)
         self.lock_fd = None
@@ -105,19 +120,15 @@ class FD_Q10C:
         return False
 
     def _release(self):
-        if self.lock_fd is None:
-            return
+        assert self.lock_fd is not None
+
         fcntl.flock(self.lock_fd, fcntl.LOCK_UN)
         os.close(self.lock_fd)
 
         self.lock_fd = None
 
     def get_value_map(self, force_power_on=True):
-        try:
-            value = self.get_value()
-        except:
-            self.stop()
-            raise
+        value = self.get_value(force_power_on)
 
         return {"flow": value}
 
