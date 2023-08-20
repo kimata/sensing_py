@@ -1,0 +1,67 @@
+[tool.poetry]
+name = "sensing_py"
+version = "0.1.0"
+description = "I2C/SPI/UART で接続されたセンサーで計測を行い，結果を Fluentd で送信するアプリです．"
+authors = ["KIMATA Tetsuya <kimata@green-rabbit.net>"]
+
+[tool.poetry.dependencies]
+"RPi.GPIO" = "^0.7.1"
+PyYAML = "^6.0"
+coloredlogs = "^15.0.1"
+docopt = "^0.6.2"
+fluent-logger = "^0.10.0"
+pyserial = "^3.5"
+python = "^3.10"
+spidev = "^3.6"
+smbus2 = "^0.4.2"
+
+[tool.poetry.group.test.dependencies]
+flaky = "^3.7.0"
+playwright = "^1.36.0"
+pytest-cov = "^4.1.0"
+pytest-freezegun = "^0.4.2"
+pytest-html = "^3.2.0"
+pytest-mock = "^3.11.1"
+pytest-playwright = "^0.4.0"
+coverage = {extras = ["toml"], version = "^7.3.0"}
+pytest-timeout = "^2.1.0"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+
+addopts = "--verbose --cov=app --cov=lib --timeout=180 --log-file-level=DEBUG --log-format=\"%(asctime)s %(levelname)s %(message)s\" --log-format=\"%(asctime)s %(levelname)s [%(filename)s:%(lineno)s %(funcName)s] %(message)s\" --capture=sys --cov-report=html --html=tests/evidence/index.htm --self-contained-html"
+
+testpaths = [
+    "tests",
+]
+filterwarnings = [
+    "ignore:The hookimpl CovPlugin.pytest_configure_node uses",
+    "ignore:The hookimpl CovPlugin.pytest_testnodedown uses",
+    "ignore::DeprecationWarning:pytest_freezegun",
+    "ignore::DeprecationWarning:docopt",
+]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if __name__ == .__main__.:",
+]
+
+[tool.coverage.html]
+directory = "tests/evidence/coverage"
+
+[tool.black]
+target-version = ['py310']
+line-length = 110
+
+[tool.isort]
+profile = "black"
+line_length = 110
+include_trailing_comma = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
