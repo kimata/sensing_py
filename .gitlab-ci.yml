@@ -2,14 +2,12 @@ image: docker:24.0-dind
 
 stages:
     - build
-    - test
-    - deploy
     - renovate
 
 build-image:
     stage: build
 
-    image: registry.green-rabbit.net:5000/kimata/ubuntu-docker-build:d386d462
+    image: registry.green-rabbit.net:5000/kimata/local_ubuntu:230812D
 
     variables:
         BUILDER: arm_builder
@@ -27,3 +25,18 @@ build-image:
           --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:cache
           --push --tag ${CI_REGISTRY_IMAGE} .
         # - docker buildx stop ${BUILDER}
+
+renovate:
+    stage: renovate
+    image:
+        name: registry.green-rabbit.net:5000/kimata/local_renovate:36
+
+        entrypoint: [""]
+    script:
+        - renovate --platform gitlab --token ${RENOVATE_TOKEN} --endpoint ${CI_SERVER_URL}/api/v4 ${CI_PROJECT_PATH}
+    rules:
+        - if: '$CI_COMMIT_BRANCH != "master"'
+          when: never
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - changes:
+              - renovate.json
