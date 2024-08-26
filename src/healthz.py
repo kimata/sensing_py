@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Liveness のチェックを行います
 
@@ -11,52 +10,48 @@ Options:
   -d                : デバッグモードで動作します．
 """
 
-from docopt import docopt
-
-import pathlib
-import datetime
 import logging
+import pathlib
 import sys
 
-sys.path.append(str(pathlib.Path(__file__).parent.parent / "lib"))
+import my_lib.healthz
+from docopt import docopt
 
-from config import load_config
-import logger
 
-args = docopt(__doc__)
+def check_liveness(target_list):
+    for target in target_list:
+        if not my_lib.healthz.check_liveness(target["name"], target["liveness_file"], target["interval"]):
+            return False
 
-config_file = args["-c"]
-debug_mode = args["-d"]
+    return True
 
-if debug_mode:
-    log_level = logging.DEBUG
-else:
-    log_level = logging.INFO
 
-logger.init(
-    "hems.sensing_py",
-    level=log_level,
-)
+######################################################################
+if __name__ == "__main__":
+    import my_lib.config
+    import my_lib.logger
 
-logging.info("Using config config: {config_file}".format(config_file=config_file))
-config = load_config(config_file)
+    args = docopt(__doc__)
 
-liveness_file = pathlib.Path(config["liveness"]["file"])
+    config_file = args["-c"]
+    debug_mode = args["-d"]
 
-if not liveness_file.exists():
-    logging.warning("Not executed.")
-    sys.exit(-1)
+    my_lib.logger.init("hems.rasp-aqua", level=logging.DEBUG if debug_mode else logging.INFO)
 
-elapsed = datetime.datetime.now() - datetime.datetime.fromtimestamp(
-    liveness_file.stat().st_mtime
-)
-if elapsed.seconds > config["sense"]["interval"]:
-    logging.warning(
-        "Execution interval is too long. ({elapsed:,} sec)".format(
-            elapsed=elapsed.seconds
-        )
-    )
-    sys.exit(-1)
+    logging.info("Using config config: %s", config_file)
+    config = my_lib.config.load(config_file)
 
-logging.info("OK.")
-sys.exit(0)
+    target_list = [
+        {
+            "name": name,
+            "liveness_file": pathlib.Path(config["liveness"]["file"][name]),
+            "interval": config[name]["interval_sec"],
+        }
+        for name in ["sensing"]
+    ]
+
+    if check_liveness(target_list):
+        logging.info("OK.")
+        sys.exit(0)
+    else:
+        sys.exit(-1)

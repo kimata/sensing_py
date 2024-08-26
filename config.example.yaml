@@ -10,8 +10,9 @@ sensor:
   - name: veml6075
     bus: vc
 
-sense:
-  interval: 30
+sensing:
+  interval_sec: 30
 
 liveness:
-  file: /dev/shm/healthz
+  file:
+    sensing: /dev/shm/healthz
