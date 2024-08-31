@@ -40,13 +40,13 @@ def execute(config):
         value_map.update({"hostname": hostname})
 
         if my_lib.fluentd_util.send(handle, "rasp", value_map):
-            logging.info("Finish.")
+            logging.info("Send OK.")
             my_lib.footprint.update(pathlib.Path(config["liveness"]["file"]["sensing"]))
 
         elapsed_time = time.time() - time_start
         sleep_time = config["sensing"]["interval_sec"] - elapsed_time
 
-        logging.info("sleep %d sec...", sleep_time)
+        logging.info("Sleep %d sec...", sleep_time)
         time.sleep(sleep_time)
 
 
