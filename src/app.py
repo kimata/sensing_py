@@ -30,7 +30,7 @@ def execute(config):
     hostname = os.environ.get("NODE_HOSTNAME", socket.gethostname())
     logging.info("Hostname: {hostname}".format(hostname=hostname))
 
-    sender = my_lib.fluentd_util.get_handle("sensor", host=config["fluent"]["host"])
+    sender = my_lib.fluentd_util.get_handle("sensor", host=config["fluentd"]["host"])
 
     while True:
         time_start = time.time()
