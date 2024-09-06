@@ -30,7 +30,7 @@ def execute(config):
     hostname = os.environ.get("NODE_HOSTNAME", socket.gethostname())
     logging.info("Hostname: {hostname}".format(hostname=hostname))
 
-    handle = my_lib.fluentd_util.get_handle("sensor", host=config["fluent"]["host"])
+    sender = my_lib.fluentd_util.get_handle("sensor", host=config["fluent"]["host"])
 
     while True:
         time_start = time.time()
@@ -39,7 +39,7 @@ def execute(config):
         value_map = my_lib.sensor.sense(active_sensor_list)
         value_map.update({"hostname": hostname})
 
-        if my_lib.fluentd_util.send(handle, "rasp", value_map):
+        if my_lib.fluentd_util.send(sender, "rasp", value_map):
             logging.info("Send OK.")
             my_lib.footprint.update(pathlib.Path(config["liveness"]["file"]["sensing"]))
 
