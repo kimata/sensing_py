@@ -11,9 +11,10 @@ Options:
   -d DEV_ADDR   : デバイスアドレス(7bit)． [default: 0x4A]
 """
 
-import smbus2
 import struct
 import time
+
+import smbus2
 
 
 class EZO_DO:
@@ -63,10 +64,11 @@ class EZO_DO:
 
 if __name__ == "__main__":
     # TEST Code
-    from docopt import docopt
+    import logging
     import pathlib
     import sys
-    import logging
+
+    from docopt import docopt
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 

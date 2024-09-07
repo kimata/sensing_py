@@ -4,15 +4,16 @@
 MAXIM の MAX31856 を使って，温度計測を行うラブラリです．
 
 Usage:
-  max31856.py 
+  max31856.py
 
 Options:
 
 """
 
-import spidev
-import time
 import struct
+import time
+
+import spidev
 
 
 class MAX31856:
@@ -74,15 +75,11 @@ class MAX31856:
             0x01,
             (avg_sel_map[self.avg_sel] << 4) | (tc_type_map[self.tc_type] << 0),
         )
-        self.reg_write(
-            0x00, (oneshot << 6) | (noise_filter_map[self.noise_filter] << 0)
-        )
+        self.reg_write(0x00, (oneshot << 6) | (noise_filter_map[self.noise_filter] << 0))
 
         time.sleep(0.8)
 
-        return (
-            struct.unpack(">i", bytes(self.reg_read(0x0C, 3) + [0x00]))[0] >> 8
-        ) / 4096.0
+        return (struct.unpack(">i", bytes(self.reg_read(0x0C, 3) + [0x00]))[0] >> 8) / 4096.0
 
     def get_value_map(self):
         value = self.get_value()
@@ -92,10 +89,11 @@ class MAX31856:
 
 if __name__ == "__main__":
     # TEST Code
-    from docopt import docopt
+    import logging
     import pathlib
     import sys
-    import logging
+
+    from docopt import docopt
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 

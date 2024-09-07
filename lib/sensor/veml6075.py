@@ -12,6 +12,7 @@ Options:
 """
 
 import time
+
 import smbus2
 
 
@@ -43,14 +44,10 @@ class VEML6075:
     # For responsivity without a diffusor and IT = 100 ms:
     # UVA sensing resolution of 0.01 UVI = 9 counts
     # UVB sensing resolution of 0.01 UVI = 8 counts
-    UVA_RESP_50MS = (
-        0.01 / 9
-    ) / 0.5016286645  # From SparkFun_VEML6075_Arduino_Library.cpp
+    UVA_RESP_50MS = (0.01 / 9) / 0.5016286645  # From SparkFun_VEML6075_Arduino_Library.cpp
     UVA_RESP_100MS = 0.01 / 9
 
-    UVB_RESP_50MS = (
-        0.01 / 8
-    ) / 0.5016286645  # From SparkFun_VEML6075_Arduino_Library.cpp
+    UVB_RESP_50MS = (0.01 / 8) / 0.5016286645  # From SparkFun_VEML6075_Arduino_Library.cpp
     UVB_RESP_100MS = 0.01 / 8
 
     def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
@@ -69,10 +66,7 @@ class VEML6075:
             self.dev_addr,
             self.REG_UV_CONF,
             [
-                self.it
-                | self.CONF_TRIG_ONE
-                | self.CONF_AF_ENABLE
-                | self.CONF_SD_POWERON,
+                self.it | self.CONF_TRIG_ONE | self.CONF_AF_ENABLE | self.CONF_SD_POWERON,
                 0x00,
             ],
         )
@@ -120,13 +114,9 @@ class VEML6075:
         uvb_calc = uvb - ((2.95 * 1.0 * uvcomp1) / 1.0) - ((1.75 * 1.0 * uvcomp2) / 1.0)
 
         if self.it == self.CONF_IT_50MS:
-            uvi = (
-                (uva_calc * self.UVA_RESP_50MS) + (uvb_calc * self.UVB_RESP_50MS)
-            ) / 2
+            uvi = ((uva_calc * self.UVA_RESP_50MS) + (uvb_calc * self.UVB_RESP_50MS)) / 2
         else:
-            uvi = (
-                (uva_calc * self.UVA_RESP_100MS) + (uvb_calc * self.UVB_RESP_100MS)
-            ) / 2
+            uvi = ((uva_calc * self.UVA_RESP_100MS) + (uvb_calc * self.UVB_RESP_100MS)) / 2
 
         uvi = ((uva_calc * 0.001461) + (uvb_calc * 0.002591)) / 2
 
@@ -144,10 +134,11 @@ class VEML6075:
 
 if __name__ == "__main__":
     # TEST Code
-    from docopt import docopt
+    import logging
     import pathlib
     import sys
-    import logging
+
+    from docopt import docopt
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 

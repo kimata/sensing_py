@@ -12,6 +12,7 @@ Options:
 """
 
 import time
+
 import smbus2
 
 
@@ -49,9 +50,7 @@ class VEML7700:
         self.integ = 25
 
     def enable(self):
-        value = (
-            self.ALS_GAIN[self.gain] | self.ALS_IT[self.integ] | self.ALS_SD_POWER_ON
-        )
+        value = self.ALS_GAIN[self.gain] | self.ALS_IT[self.integ] | self.ALS_SD_POWER_ON
 
         self.i2cbus.write_i2c_block_data(
             self.dev_addr,
@@ -60,9 +59,7 @@ class VEML7700:
         )
 
     def disable(self):
-        value = (
-            self.ALS_GAIN[self.gain] | self.ALS_IT[self.integ] | self.ALS_SD_POWER_OFF
-        )
+        value = self.ALS_GAIN[self.gain] | self.ALS_IT[self.integ] | self.ALS_SD_POWER_OFF
 
         self.i2cbus.write_i2c_block_data(
             self.dev_addr,
@@ -104,12 +101,7 @@ class VEML7700:
         if self.gain == 0.125:
             # NOTE:
             # https://www.vishay.com/docs/84367/designingveml6030.pdf
-            als = (
-                (6.0135e-13 * als ** 4)
-                - (9.3924e-9 * als ** 3)
-                + (8.1488e-5 * als ** 2)
-                + (1.0023e0 * als)
-            )
+            als = (6.0135e-13 * als**4) - (9.3924e-9 * als**3) + (8.1488e-5 * als**2) + (1.0023e0 * als)
 
         return [als]
 
@@ -130,10 +122,11 @@ class VEML7700:
 
 if __name__ == "__main__":
     # TEST Code
-    from docopt import docopt
+    import logging
     import pathlib
     import sys
-    import logging
+
+    from docopt import docopt
 
     sys.path.append(str(pathlib.Path(__file__).parent.parent))
 

@@ -28,7 +28,7 @@ def execute(config):
     active_sensor_list = my_lib.sensor.ping(sensor_list)
 
     hostname = os.environ.get("NODE_HOSTNAME", socket.gethostname())
-    logging.info("Hostname: {hostname}".format(hostname=hostname))
+    logging.info("Hostname: %s", hostname)
 
     sender = my_lib.fluentd_util.get_handle("sensor", host=config["fluentd"]["host"])
 

@@ -32,4 +32,3 @@ dtparam=spi=on
 dtoverlay=disable-bt
 dtparam=spi=on
 ```
-
