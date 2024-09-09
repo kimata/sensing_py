@@ -1,4 +1,4 @@
-fluent:
+fluentd:
     host: proxy.green-rabbit.net
 
 sensor:
