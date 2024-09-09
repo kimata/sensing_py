@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "fluent": {
+            "type": "object",
+            "properties": {
+                "host": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "host"
+            ]
+        },
+        "sensor": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "bus": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            }
+        },
+        "sensing": {
+            "type": "object",
+            "properties": {
+                "interval_sec": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "interval_sec"
+            ]
+        },
+        "liveness": {
+            "type": "object",
+            "properties": {
+                "file": {
+                    "type": "object",
+                    "properties": {
+                        "sensing": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "sensing"
+                    ]
+                }
+            },
+            "required": [
+                "file"
+            ]
+        }
+    },
+    "required": [
+        "fluent",
+        "liveness",
+        "sensing",
+        "sensor"
+    ]
+}

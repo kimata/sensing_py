@@ -21,6 +21,8 @@ import my_lib.fluentd_util
 import my_lib.footprint
 import my_lib.sensor
 
+SCHEMA_CONFIG = "config.schema"
+
 
 def execute(config):
     sensor_list = my_lib.sensor.load(config["sensor"])
@@ -61,9 +63,8 @@ if __name__ == "__main__":
     config_file = args["-c"]
     debug_mode = args["-d"]
 
-    my_lib.logger.init("hems.rasp-shutter", level=logging.DEBUG if debug_mode else logging.INFO)
+    my_lib.logger.init("sensing", level=logging.DEBUG if debug_mode else logging.INFO)
 
-    logging.info("Using config config: %s", config_file)
-    config = my_lib.config.load(config_file)
+    config = my_lib.config.load(config_file, pathlib.Path(SCHEMA_CONFIG))
 
     execute(config)
