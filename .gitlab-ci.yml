@@ -13,7 +13,7 @@ build-image:
     script:
         - cp /etc/gitlab-runner/certs/local-ca.crt /usr/local/share/ca-certificates/
         - ls -la /usr/local/share/ca-certificates/local-ca.crt
-        - cat /usr/local/share/ca-certificates/
+        - cat /usr/local/share/ca-certificates/local-ca.crt
         - update-ca-certificates
 
         - export GIT_SSL_NO_VERIFY=1
