@@ -11,11 +11,6 @@ build-image:
         BUILDER: arm_builder
 
     script:
-        - cp /etc/gitlab-runner/certs/local-ca.crt /usr/local/share/ca-certificates/
-        - ls -la /usr/local/share/ca-certificates/local-ca.crt
-        - cat /usr/local/share/ca-certificates/local-ca.crt
-        - update-ca-certificates
-
         - export GIT_SSL_NO_VERIFY=1
         - git clone https://gitlab.green-rabbit.net/kimata/sense-config.git
         - mv sense-config/*.yaml ./
