@@ -11,7 +11,7 @@ build-image:
         BUILDER: arm_builder
 
     script:
-        - cp /etc/gitlab-runner/certs/local-ca.crt /usr/local/share/ca-certificates/w
+        - cp /etc/gitlab-runner/certs/local-ca.crt /usr/local/share/ca-certificates/
         - ls -la /usr/local/share/ca-certificates/local-ca.crt
         - cat /usr/local/share/ca-certificates/
         - update-ca-certificates
