@@ -2,16 +2,11 @@ fluentd:
     host: proxy.green-rabbit.net
 
 sensor:
-    - name: scd4x
-    - name: max31856
-    - name: sht35
-    - name: apds9250
-    - name: veml7700
-    - name: veml6075
-      bus: vc
+    - name: sm9561
+    - name: 
 
 sensing:
-    interval_sec: 30
+    interval_sec: 20
 
 liveness:
     file:
