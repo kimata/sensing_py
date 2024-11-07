@@ -3,7 +3,13 @@ fluentd:
 
 sensor:
     - name: sm9561
-    - name: 
+    - name: scd4x
+    - name: max31856
+    - name: sht35
+    - name: apds9250
+    - name: veml7700
+    - name: veml6075
+      bus: vc
 
 sensing:
     interval_sec: 20
