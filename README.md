@@ -20,6 +20,9 @@ I2C/SPI/UART で接続されたセンサーで計測を行い，結果を Fluent
 | 流量センサ     | FD-Q10C                      | KEYENCE           |
 | A/D 変換器     | ADS1015                      | Texas Instruments |
 | 熱電対アンプ   | MAX31856                     | Analog Devices    |
+| 雨量計         | RG-15                        | Hydreon           |
+| 日射計         | LPPYRA03                     | Delta OHM         |
+| 照度計         | SM9561                       | SONBEST           |
 
 ## 設定
 
