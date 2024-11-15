@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-I2C/SPI/UART で接続されたセンサーで計測を行い，結果を Fluentd で送信する
-スクリプトです．
+I2C/SPI/UART で接続されたセンサーで計測を行い，結果を Fluentd で送信するスクリプトです．
 
 Usage:
   app.py [-c CONFIG] [-d]
