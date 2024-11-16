@@ -13,6 +13,7 @@ Options:
 import logging
 import os
 import pathlib
+import signal
 import socket
 import time
 
@@ -22,8 +23,21 @@ import my_lib.sensor
 
 SCHEMA_CONFIG = "config.schema"
 
+should_terminate = False
+
+
+def sig_handler(num, frame):
+    global should_terminate
+
+    logging.warning("receive signal {num}".format(num=num))
+
+    if num == signal.SIGTERM:
+        should_terminate = True
+
 
 def execute(config):
+    global should_terminate
+
     sensor_list = my_lib.sensor.load(config["sensor"])
 
     active_sensor_list = my_lib.sensor.ping(sensor_list)
@@ -32,6 +46,8 @@ def execute(config):
     logging.info("Hostname: %s", hostname)
 
     sender = my_lib.fluentd_util.get_handle("sensor", host=config["fluentd"]["host"])
+
+    signal.signal(signal.SIGTERM, sig_handler)
 
     while True:
         time_start = time.time()
@@ -46,6 +62,10 @@ def execute(config):
 
         elapsed_time = time.time() - time_start
         sleep_time = config["sensing"]["interval_sec"] - elapsed_time
+
+        if should_terminate:
+            logging.warning("SIGTERM received")
+            break
 
         logging.info("Sleep %d sec...", sleep_time)
         time.sleep(sleep_time)
