@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 EZO-DO を使って pH を取得するライブラリです．
 
@@ -17,12 +16,12 @@ import time
 import smbus2
 
 
-class EZO_DO:
+class EZO_DO:  # noqa: N801
     NAME = "EZO-DO"
     DEV_ADDR = 0x68  # 7bit
     RASP_I2C_BUS = 0x1  # Raspberry Pi の I2C のバス番号
 
-    def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
+    def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):  # noqa: D107
         self.bus = bus
         self.dev_addr = dev_addr
         self.i2cbus = smbus2.SMBus(bus)
@@ -32,7 +31,7 @@ class EZO_DO:
             self.exec_command("i")
 
             return True
-        except:
+        except Exception:
             return False
 
     def get_value(self):
@@ -53,8 +52,7 @@ class EZO_DO:
         return bytes(read)
 
     def __compose_command(self, text):
-        command = list(struct.unpack("B" * len(text), text))
-        return command
+        return list(struct.unpack("B" * len(text), text))
 
     def get_value_map(self):
         value = self.get_value()
@@ -83,6 +81,6 @@ if __name__ == "__main__":
     sensor = sensor.ezo_do.EZO_DO(bus=bus, dev_addr=dev_addr)
 
     ping = sensor.ping()
-    logging.info("PING: {ping}".format(ping=ping))
+    logging.info("PING: %s", ping)
     if ping:
-        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
+        logging.info("VALUE: %s", str(sensor.get_value_map()))

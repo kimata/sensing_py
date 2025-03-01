@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 VEML6075 を使って紫外線を計測するライブラリです．
 
@@ -50,7 +49,7 @@ class VEML6075:
     UVB_RESP_50MS = (0.01 / 8) / 0.5016286645  # From SparkFun_VEML6075_Arduino_Library.cpp
     UVB_RESP_100MS = 0.01 / 8
 
-    def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
+    def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):  # noqa: D107
         self.bus = bus
         self.dev_addr = dev_addr
         self.i2cbus = smbus2.SMBus(bus)
@@ -87,7 +86,7 @@ class VEML6075:
             data = self.i2cbus.read_i2c_block_data(self.dev_addr, self.REG_DEVID, 2)
 
             return int.from_bytes(data, byteorder="little") == 0x26
-        except:
+        except Exception:
             return False
 
     def get_value(self):
@@ -153,6 +152,6 @@ if __name__ == "__main__":
     sensor = sensor.veml6075.VEML6075(bus=bus, dev_addr=dev_addr)
 
     ping = sensor.ping()
-    logging.info("PING: {ping}".format(ping=ping))
+    logging.info("PING: %s", ping)
     if ping:
-        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
+        logging.info("VALUE: %s", str(sensor.get_value_map()))

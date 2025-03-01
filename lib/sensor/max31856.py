@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 MAXIM の MAX31856 を使って，温度計測を行うラブラリです．
 
@@ -19,7 +18,7 @@ import spidev
 class MAX31856:
     NAME = "MAX31856"
 
-    def __init__(self):
+    def __init__(self):  # noqa: D107
         spi = spidev.SpiDev()
         spi.open(0, 0)
         spi.max_speed_hz = 1000000
@@ -44,7 +43,7 @@ class MAX31856:
             # NOTE: CR1 レジスタは初期値が 0x03 で，0x00 で使うこともないので，
             # デバイスの存在確認に使う．
             return self.reg_read(0x01)[0] != 0x00
-        except:
+        except Exception:
             return False
 
     def get_value(self):
@@ -79,7 +78,7 @@ class MAX31856:
 
         time.sleep(0.8)
 
-        return (struct.unpack(">i", bytes(self.reg_read(0x0C, 3) + [0x00]))[0] >> 8) / 4096.0
+        return (struct.unpack(">i", bytes([*self.reg_read(0x0C, 3), 0]))[0] >> 8) / 4096.0
 
     def get_value_map(self):
         value = self.get_value()
@@ -106,6 +105,6 @@ if __name__ == "__main__":
     sensor = sensor.max31856.MAX31856()
 
     ping = sensor.ping()
-    logging.info("PING: {ping}".format(ping=ping))
+    logging.info("PING: %s", ping)
     if ping:
-        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
+        logging.info("VALUE: %s", str(sensor.get_value_map()))

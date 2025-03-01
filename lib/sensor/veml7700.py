@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 VEML7700 を使って照度(LUX)を取得するライブラリです．
 
@@ -42,7 +41,7 @@ class VEML7700:
     ALS_SD_POWER_ON = 0x00 << 0
     ALS_SD_POWER_OFF = 0x01 << 0
 
-    def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):
+    def __init__(self, bus=RASP_I2C_BUS, dev_addr=DEV_ADDR):  # noqa: D107
         self.bus = bus
         self.dev_addr = dev_addr
         self.i2cbus = smbus2.SMBus(bus)
@@ -82,10 +81,8 @@ class VEML7700:
 
             # NOTE: 読み出しエラーが起こらなければセンサーが接続されていると見なす
             return True
-        except:
-            pass
-
-        return False
+        except Exception:
+            return False
 
     def get_value_impl(self):
         self.enable()
@@ -141,6 +138,6 @@ if __name__ == "__main__":
     sensor = sensor.veml7700.VEML7700(bus=bus, dev_addr=dev_addr)
 
     ping = sensor.ping()
-    logging.info("PING: {ping}".format(ping=ping))
+    logging.info("PING: %s", ping)
     if ping:
-        logging.info("VALUE: {value}".format(value=sensor.get_value_map()))
+        logging.info("VALUE: %s", str(sensor.get_value_map()))
