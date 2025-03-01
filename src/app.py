@@ -26,10 +26,10 @@ SCHEMA_CONFIG = "config.schema"
 should_terminate = False
 
 
-def sig_handler(num, frame):
-    global should_terminate
+def sig_handler(num, _):
+    global should_terminate  # noqa: PLW0603
 
-    logging.warning("receive signal {num}".format(num=num))
+    logging.warning("receive signal %d", num)
 
     if num == signal.SIGTERM:
         should_terminate = True
