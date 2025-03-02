@@ -24,6 +24,12 @@
                     },
                     "bus": {
                         "type": "string"
+                    },
+                    "uart_dev": {
+                        "type": "string"
+                    },
+                    "param": {
+                        "type": "object"
                     }
                 },
                 "required": [
